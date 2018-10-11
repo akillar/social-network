@@ -40,5 +40,6 @@ Route::delete('friendships/{recipient}', 'FriendshipsController@destroy')->name(
 /** Request Friendships routes */
 Route::post('accept-friendships/{sender}', 'AcceptFriendshipsController@store')->name('accept-friendships.store')->middleware('auth');
 Route::delete('accept-friendships/{sender}', 'AcceptFriendshipsController@destroy')->name('accept-friendships.destroy')->middleware('auth');
+Route::get('friends/request', 'AcceptFriendshipsController@index')->name('accept-friendships.index')->middleware('auth');
 
 Route::auth();

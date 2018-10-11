@@ -8,6 +8,21 @@ use Illuminate\Http\Request;
 
 class AcceptFriendshipsController extends Controller
 {
+
+    public function index() {
+
+        return view('friendships.index', [
+
+            'friendshipRequests' => Friendship::with('sender')->where([
+
+                'recipient_id' => auth()->id()
+
+            ])->get()
+
+        ]);
+
+    }
+
     public function store(User $sender) {
 
         Friendship::where([

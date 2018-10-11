@@ -62,11 +62,11 @@
 
                 if (this.localFriendshipStatus === 'pending') {
 
-                    return 'Cancelar solicitud'
+                    return 'Cancel request'
 
                 }
 
-                return 'Solicitar amistad'
+                return 'Request friendship'
 
             }
 
