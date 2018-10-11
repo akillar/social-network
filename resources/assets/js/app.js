@@ -15,7 +15,14 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+window.EventBus = new Vue();
+
+Vue.component('status-form', require('./components/StatusForm'));
+Vue.component('status-list', require('./components/StatusList'));
+Vue.component('friendship-btn', require('./components/FriendshipBtn'));
+
+import auth from './mixins/auth';
+Vue.mixin(auth)
 
 const app = new Vue({
     el: '#app'
