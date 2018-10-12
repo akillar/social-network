@@ -132,7 +132,13 @@ class CanRequestFriendshipTest extends TestCase
         ]);
 
         // Given
-        $this->actingAs($recipient)->postJson(route('accept-friendships.store', $sender));
+        $response = $this->actingAs($recipient)->postJson(route('accept-friendships.store', $sender));
+
+        $response->assertJson([
+
+            'friendship_status' => 'accepted'
+
+        ]);
 
         // When
         $this->assertDatabaseHas('friendships',
@@ -181,7 +187,13 @@ class CanRequestFriendshipTest extends TestCase
         ]);
 
         // Given
-        $this->actingAs($recipient)->deleteJson(route('accept-friendships.destroy', $sender));
+        $response = $this->actingAs($recipient)->deleteJson(route('accept-friendships.destroy', $sender));
+
+        $response->assertJson([
+
+            'friendship_status' => 'denied'
+
+        ]);
 
         // When
         $this->assertDatabaseHas('friendships',

@@ -5,12 +5,19 @@
         <span v-text="sender.name"></span> has sent you a Friend Request!
 
         <button @click="acceptFriendshipRequest">Accept request</button>
+        <button dusk="deny-friendship" @click="denyFriendshipRequest">Deny request</button>
 
     </div>
 
-    <div v-else>
+    <div v-else-if="localFriendshipStatus === 'accepted'">
 
         You are now friends with <span v-text="sender.name"></span> !
+
+    </div>
+
+    <div v-else-if="localFriendshipStatus === 'denied'">
+
+        Request denied <span v-text="sender.name"></span>
 
     </div>
 
@@ -27,7 +34,7 @@
                 required: true
             },
             friendshipStatus: {
-                type: Object,
+                type: String,
                 required: true
             }
 
@@ -49,7 +56,7 @@
 
                     .then(res => {
 
-                        this.localFriendshipStatus = 'accepted'
+                        this.localFriendshipStatus = res.data.friendship_status
 
                     })
                     .catch(err => {
@@ -58,7 +65,24 @@
 
                     })
 
-            }
+            },
+
+            denyFriendshipRequest() {
+
+                axios.delete(`/accept-friendships/${this.sender.name}`)
+
+                    .then(res => {
+
+                        this.localFriendshipStatus = res.data.friendship_status
+
+                    })
+                    .catch(err => {
+
+                        console.log(err.response.data)
+
+                    })
+
+            },
 
         }
 

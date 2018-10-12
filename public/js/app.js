@@ -48816,6 +48816,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -48827,7 +48834,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             required: true
         },
         friendshipStatus: {
-            type: Object,
+            type: String,
             required: true
         }
 
@@ -48845,9 +48852,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         acceptFriendshipRequest: function acceptFriendshipRequest() {
             var _this = this;
 
-            axios.post('/accept-friendships/' + this.sender.name).then(function (res) {
+            axios.post("/accept-friendships/" + this.sender.name).then(function (res) {
 
-                _this.localFriendshipStatus = 'accepted';
+                _this.localFriendshipStatus = res.data.friendship_status;
+            }).catch(function (err) {
+
+                console.log(err.response.data);
+            });
+        },
+        denyFriendshipRequest: function denyFriendshipRequest() {
+            var _this2 = this;
+
+            axios.delete("/accept-friendships/" + this.sender.name).then(function (res) {
+
+                _this2.localFriendshipStatus = res.data.friendship_status;
             }).catch(function (err) {
 
                 console.log(err.response.data);
@@ -48871,13 +48889,29 @@ var render = function() {
         _vm._v(" has sent you a Friend Request!\n\n    "),
         _c("button", { on: { click: _vm.acceptFriendshipRequest } }, [
           _vm._v("Accept request")
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            attrs: { dusk: "deny-friendship" },
+            on: { click: _vm.denyFriendshipRequest }
+          },
+          [_vm._v("Deny request")]
+        )
+      ])
+    : _vm.localFriendshipStatus === "accepted"
+      ? _c("div", [
+          _vm._v("\n\n    You are now friends with "),
+          _c("span", { domProps: { textContent: _vm._s(_vm.sender.name) } }),
+          _vm._v(" !\n\n")
         ])
-      ])
-    : _c("div", [
-        _vm._v("\n\n    You are now friends with "),
-        _c("span", { domProps: { textContent: _vm._s(_vm.sender.name) } }),
-        _vm._v(" !\n\n")
-      ])
+      : _vm.localFriendshipStatus === "denied"
+        ? _c("div", [
+            _vm._v("\n\n    Request denied "),
+            _c("span", { domProps: { textContent: _vm._s(_vm.sender.name) } })
+          ])
+        : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
