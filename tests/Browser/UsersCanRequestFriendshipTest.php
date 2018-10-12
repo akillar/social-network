@@ -57,10 +57,37 @@ class UsersCanRequestFriendshipTest extends DuskTestCase
                 ->visit(route('accept-friendships.index'))
                 ->assertSee($sender->name)
                 ->press('@accept-friendship')
-                ->waitForText('You are now friends')
+                ->waitForText('You are now friends', 7)
                 ->assertSee('You are now friends')
                 ->visit(route('accept-friendships.index'))
                 ->assertSee('You are now friends');
+        });
+    }
+
+    /**
+     * @test
+     * @throws \Throwable
+     */
+    public function recipient_can_delete_friendship_request()
+    {
+
+        $sender = factory(User::class)->create();
+        $recipient = factory(User::class)->create();
+
+        Friendship::create([
+            'sender_id' => $sender->id,
+            'recipient_id' => $recipient->id
+        ]);
+
+        $this->browse(function (Browser $browser) use ($sender, $recipient) {
+            $browser->loginAs($recipient)
+                ->visit(route('accept-friendships.index'))
+                ->assertSee($sender->name)
+                ->press('@deny-friendship')
+                ->waitForText('Request denied')
+                ->assertSee('Request denied')
+                ->visit(route('accept-friendships.index'))
+                ->assertSee('Request denied');
         });
     }
 
@@ -83,11 +110,12 @@ class UsersCanRequestFriendshipTest extends DuskTestCase
             $browser->loginAs($recipient)
                 ->visit(route('accept-friendships.index'))
                 ->assertSee($sender->name)
-                ->press('@deny-friendship')
-                ->waitForText('Request denied')
-                ->assertSee('Request denied')
+                ->press('@delete-friendship')
+                ->waitForText('Request deleted')
+                ->assertSee('Request deleted')
                 ->visit(route('accept-friendships.index'))
-                ->assertSee('Request denied');
+                ->assertDontSee('Request deleted')
+                ->assertDontSee($sender->name);
         });
     }
 }

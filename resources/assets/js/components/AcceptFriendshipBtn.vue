@@ -1,23 +1,30 @@
 <template>
 
-    <div v-if="localFriendshipStatus === 'pending'">
+    <div>
 
-        <span v-text="sender.name"></span> has sent you a Friend Request!
+        <div v-if="localFriendshipStatus === 'pending'">
 
-        <button @click="acceptFriendshipRequest">Accept request</button>
-        <button dusk="deny-friendship" @click="denyFriendshipRequest">Deny request</button>
+            <span v-text="sender.name"></span> has sent you a Friend Request!
 
-    </div>
+            <button @click="acceptFriendshipRequest">Accept request</button>
+            <button dusk="deny-friendship" @click="denyFriendshipRequest">Deny request</button>
 
-    <div v-else-if="localFriendshipStatus === 'accepted'">
+        </div>
 
-        You are now friends with <span v-text="sender.name"></span> !
+        <div v-else-if="localFriendshipStatus === 'accepted'">
 
-    </div>
+            You are now friends with <span v-text="sender.name"></span> !
 
-    <div v-else-if="localFriendshipStatus === 'denied'">
+        </div>
 
-        Request denied <span v-text="sender.name"></span>
+        <div v-else-if="localFriendshipStatus === 'denied'">
+
+            Request denied <span v-text="sender.name"></span>
+
+        </div>
+
+        <div v-if="localFriendshipStatus === 'deleted'">Request deleted</div>
+        <button v-else dusk="delete-friendship" @click="deleteFriendship">Delete friendship</button>
 
     </div>
 
@@ -66,10 +73,25 @@
                     })
 
             },
-
             denyFriendshipRequest() {
 
                 axios.delete(`/accept-friendships/${this.sender.name}`)
+
+                    .then(res => {
+
+                        this.localFriendshipStatus = res.data.friendship_status
+
+                    })
+                    .catch(err => {
+
+                        console.log(err.response.data)
+
+                    })
+
+            },
+            deleteFriendship() {
+
+                axios.delete(`/friendships/${this.sender.name}`)
 
                     .then(res => {
 
