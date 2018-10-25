@@ -32,19 +32,9 @@ class FriendshipsController extends Controller
 
     public function destroy(User $user) {
 
-        $friendship = Friendship::where([
+        $friendship = Friendship::betweenUsers(auth()->user(), $user)->first();
 
-            'sender_id' => auth()->id(),
-            'recipient_id' => $user->id
-
-        ])->orWhere([
-
-            'sender_id' => $user->id,
-            'recipient_id' => auth()->id()
-
-        ])->first();
-
-        if ($friendship->status === 'denied') {
+        if ($friendship->status === 'denied' && (int) $friendship->sender_id === auth()->id()) {
 
             return response()->json([
 
