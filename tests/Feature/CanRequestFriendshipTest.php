@@ -58,6 +58,28 @@ class CanRequestFriendshipTest extends TestCase
         $this->assertCount(1, Friendship::all());
 
     }
+    
+    /**
+    *   @test
+    *   @throws \Throwable
+    */
+    public function a_user_cannot_send_friend_request_to_itself() {
+
+        $sender = factory(User::class)->create();
+
+        // Given
+        $this->actingAs($sender)->postJson(route('friendships.store', $sender));
+
+        // When
+        $this->assertDatabaseMissing('friendships', [
+
+            'sender_id' => $sender->id,
+            'recipient_id' => $sender->id,
+            'status' => 'pending'
+
+        ]);
+        
+    }
 
     /**
      *   @test
@@ -77,7 +99,7 @@ class CanRequestFriendshipTest extends TestCase
      * @test
      * @throws \Throwable
      */
-    public function senders_can_delete_send_friendship_request() {
+    public function senders_can_delete_sent_friendship_request() {
 
         $this->withoutExceptionHandling();
 
@@ -106,6 +128,44 @@ class CanRequestFriendshipTest extends TestCase
 
             'sender_id' => $sender->id,
             'recipient_id' => $recipient->id,
+
+        ]);
+
+    }
+
+    /**
+     * @test
+     * @throws \Throwable
+     */
+    public function senders_cannot_delete_denied_friendship_request() {
+
+        // Variables
+        $sender = factory(User::class)->create();
+        $recipient = factory(User::class)->create();
+
+        Friendship::create([
+
+            'sender_id' => $sender->id,
+            'recipient_id' => $recipient->id,
+            'status' => 'denied'
+
+        ]);
+
+        // Given
+        $response = $this->actingAs($sender)->deleteJson(route('friendships.destroy', $recipient));
+
+        $response->assertJson([
+
+            'friendship_status' => 'denied'
+
+        ]);
+
+        // When
+        $this->assertDatabaseHas('friendships', [
+
+            'sender_id' => $sender->id,
+            'recipient_id' => $recipient->id,
+            'status' => 'denied'
 
         ]);
 
@@ -198,9 +258,9 @@ class CanRequestFriendshipTest extends TestCase
 
         $user = factory(User::class)->create();
 
-        $response = $this->postJson(route('accept-friendships.store', $user));
+        $this->postJson(route('accept-friendships.store', $user))->assertStatus(401);
 
-        $response->assertStatus(401);
+        $this->get(route('accept-friendships.index'))->assertRedirect('login');
 
     }
 

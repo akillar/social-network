@@ -34,6 +34,8 @@
 
             toggleFriendshipStatus() {
 
+                this.redirectIfGuest()
+
                 let method = this.getMethod()
 
                 axios[method](`friendships/${this.recipient.name}`)
@@ -51,7 +53,14 @@
             },
             getMethod() {
 
-                return this.localFriendshipStatus === 'pending' ? 'delete' : 'post'
+                if (this.localFriendshipStatus === 'pending' ||
+                    this.localFriendshipStatus === 'accepted') {
+
+                    return  'delete'
+
+                }
+
+                return 'post'
 
             }
 
@@ -63,6 +72,18 @@
                 if (this.localFriendshipStatus === 'pending') {
 
                     return 'Cancel request'
+
+                }
+
+                if (this.localFriendshipStatus === 'accepted') {
+
+                    return 'Delete friend'
+
+                }
+
+                if (this.localFriendshipStatus === 'denied') {
+
+                    return 'Denied request'
 
                 }
 
