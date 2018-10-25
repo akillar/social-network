@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Status;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -49,5 +50,11 @@ class User extends Authenticatable
     
         return $this->avatar();
     
+    }
+
+    public function statuses() {
+
+        return $this->hasMany(Status::class);
+
     }
 }

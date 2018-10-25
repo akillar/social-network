@@ -4,6 +4,10 @@ namespace Tests\Feature;
 
 use App\User;
 use Tests\TestCase;
+use App\Models\Status;
+use App\Events\StatusCreated;
+use Illuminate\Support\Facades\Event;
+use App\Http\Resources\StatusResource;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -12,7 +16,7 @@ class CreateStatusTest extends TestCase
 
     use RefreshDatabase;
 
-    protected $body = 'Mi primer status';
+    protected $body = 'Mi first comment';
 
     /** @test */
     public function guests_users_cannot_create_statuses() {
@@ -29,7 +33,7 @@ class CreateStatusTest extends TestCase
     /** @test */
     public function an_authenticated_user_can_create_status() {
 
-        $this->withoutExceptionHandling();
+        Event::fake([StatusCreated::class]);
 
         // Variables
 
@@ -41,6 +45,13 @@ class CreateStatusTest extends TestCase
         $response = $this->postJson(route('statuses.store'), [
             'body' => $this->body
         ]);
+
+        Event::assertDispatched(StatusCreated::class, function ($event) {
+
+            return $event->status->id === Status::first()->id
+                && get_class($event->status) === StatusResource::class;
+
+        });
 
         $response->assertJson([
             'data' => [
