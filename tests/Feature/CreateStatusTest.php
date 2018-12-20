@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\User;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Tests\TestCase;
 use App\Models\Status;
 use App\Events\StatusCreated;
@@ -49,7 +50,9 @@ class CreateStatusTest extends TestCase
         Event::assertDispatched(StatusCreated::class, function ($event) {
 
             return $event->status->id === Status::first()->id
-                && get_class($event->status) === StatusResource::class;
+                && $event->status instanceof StatusResource
+                && $event->status->resource instanceof Status
+                && $event instanceof ShouldBroadcast;
 
         });
 

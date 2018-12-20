@@ -26,14 +26,15 @@ use:
     
 #### Installation
 
-- git clone https://github.com/Bcryp7/social-network.git
-- composer install
-- npm install
-- cp .env.example .env
-- php artisan key:generate
+- `git clone https://github.com/Bcryp7/social-network.git`
+- `composer install`
+- `npm install`
+- `cp .env.example .env`
+- `php artisan key:generate`
 - Set DB credentials in .env file
-- npm run watch
-- php artisan serve
+- Set Pusher credentials in .env file
+- `npm run watch`
+- `php artisan serve`
 - Enjoy!
 
 ## Contributing
